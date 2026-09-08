@@ -120,6 +120,16 @@ extern char* EEPROM_FILENAME;
 #define USE_MAX7456
 #define USE_PWM_OUTPUT
 
+// DSHOT with bidirectional telemetry, served by drivers/dshot_fake.c from the simulation's motor
+// speed (fpv-followcam-sim #23). Enables RPM filter and dynamic idle; the dynamic notch is
+// re-enabled in the platform.h shadow because target/common_post.h drops it for SIMULATOR_BUILD.
+#define USE_DSHOT
+#define USE_DSHOT_TELEMETRY
+#define USE_DSHOT_TELEMETRY_STATS
+#define USE_RPM_FILTER
+#define USE_DYN_IDLE
+#define SIMITL_WANT_DYN_NOTCH_FILTER   // -> USE_DYN_NOTCH_FILTER, see betaflightext platform.h
+
 #define USE_RC_SMOOTHING_FILTER
 #define USE_BATTERY_VOLTAGE_SAG_COMPENSATION
 

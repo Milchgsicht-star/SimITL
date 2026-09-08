@@ -1,2 +1,3 @@
 build/
-.vscode/
+.vscode/# SimITL-eigene Betaflight-Shadows liegen unter src/main/build/ (nicht der CMake-Build-Ordner)
+!extern/betaflightext/src/main/build/

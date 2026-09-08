@@ -444,7 +444,10 @@ void unusedPinsInit(void)
 void systemInit(void) {
   printf("[system] Init...\n");
   SystemCoreClock = 500 * 1000000;  // fake 500MHz
-  micros_passed = 0U;
+  // Start the clock at 1 ms, not 0: Betaflight records the motor-enable time as millis() and treats
+  // a value of 0 as "motors never enabled" (dshotStreamingCommandsAreEnabled), which would keep the
+  // BOOTGRACE arming block set forever with a DSHOT protocol (fpv-followcam-sim #23).
+  micros_passed = 1000U;
   sleep_timer = 0;
   cliMode = false;
 }
@@ -514,5 +517,3 @@ int IO_GPIOPortIdx(IO_t io)
     }
     return (((size_t)IO_GPIO(io) - GPIOA_BASE) >> 10);
 }
-
-bool useDshotTelemetry = false;

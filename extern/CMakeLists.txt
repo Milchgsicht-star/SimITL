@@ -28,6 +28,7 @@ set(BETAFLIGHT_SOURCES
   common/streambuf.c
   common/crc.c
   common/filter.c
+  common/sdft.c
   common/sensor_alignment.c
   common/bitarray.c
   common/printf.c
@@ -65,6 +66,7 @@ set(BETAFLIGHT_SOURCES
   drivers/motor.c
   drivers/bus.c
   drivers/dshot.c
+  drivers/dshot_command.c
   drivers/serial.c
   #drivers/serial_tcp.c
   drivers/buf_writer.c
@@ -129,6 +131,8 @@ set(BETAFLIGHT_SOURCES
   flight/imu.c
   flight/pid.c
   flight/pid_init.c
+  flight/rpm_filter.c
+  flight/dyn_notch_filter.c
   flight/position.c
   #flight/feedforward.c
   flight/gps_rescue_multirotor.c
@@ -207,6 +211,7 @@ file(GLOB BETAFLIGHT_EXTENSIONS_SOURCES
 
 set(BETAFLIGHT_EXTENSIONS_SOURCES ${BETAFLIGHT_EXTENSIONS_SOURCES} 
   "${CMAKE_CURRENT_SOURCE_DIR}/betaflightext/src/main/drivers/pwm_output_fake.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/betaflightext/src/main/drivers/dshot_fake.c"
   "${CMAKE_CURRENT_SOURCE_DIR}/betaflightext/src/main/drivers/serial_ws.c"
   "${CMAKE_CURRENT_SOURCE_DIR}/betaflightext/src/main/drivers/sound_beeper.c"
 )
