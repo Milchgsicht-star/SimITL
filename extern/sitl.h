@@ -53,6 +53,8 @@ namespace SimITL{
       // rc data
       uint16_t rcDataCache[16] {};
       uint32_t rcDataReceptionTimeUs = 0U;
+      // #23: true from setRcData() until Betaflight has consumed the frame (see rxRcFrameStatus).
+      bool rcDataNewFrame = false;
 
       static float rxRcReadData(const BF::rxRuntimeState_t *rxRuntimeState, uint8_t channel)
       {
@@ -68,6 +70,15 @@ namespace SimITL{
       static uint8_t rxRcFrameStatus(BF::rxRuntimeState_t *rxRuntimeState)
       {
         UNUSED(rxRuntimeState);
+        // Report a complete frame exactly once per setRcData() call, like a real receiver driver.
+        // Reporting RX_FRAME_COMPLETE on every call made Betaflight run processRx() several times
+        // per frame with the same lastRcFrameTimeUs; the resulting delta of 0 marked the RX rate
+        // invalid, RC smoothing never trained and the throttle stayed at zero for frame rates
+        // below ~500 Hz (fpv-followcam-sim #23).
+        if (!rcDataNewFrame) {
+          return BF::RX_FRAME_PENDING;
+        }
+        rcDataNewFrame = false;
         return BF::RX_FRAME_COMPLETE;
       }
 
@@ -84,6 +95,9 @@ namespace SimITL{
       extern int64_t sleep_timer;
 
       extern int16_t motorsPwm[MAX_SUPPORTED_MOTORS];
+
+      // #23: motor speed the simulation hands to the fake DSHOT driver as bidirectional telemetry
+      extern float simDshotMotorRpm[MAX_SUPPORTED_MOTORS];
 
     } // end extern "C"
   }

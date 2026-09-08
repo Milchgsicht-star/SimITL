@@ -2,6 +2,7 @@
 #include "bf.h"
 #include "sitl.h" // access to bf internals
 #include <array>
+#include <cmath>
 
 namespace SimITL{
   #define USE_QUAT_ORIENTATION
@@ -33,6 +34,7 @@ namespace SimITL{
         rcDataCache[i] = uint16_t(1500 + data[i] * 500);
       }
       rcDataReceptionTimeUs = timeUs;
+      rcDataNewFrame = true;   // #23: one RX_FRAME_COMPLETE per frame
       // BF::rxMspFrameReceive(&rcData[0], 8);
       // hack to trick bf into using sim data...
       BF::rxRuntimeState.channelCount = SIMULATOR_MAX_RC_CHANNELS; // SimITL target.h
@@ -122,6 +124,14 @@ namespace SimITL{
       }
     }
 
+    // #23: hand the physics' motor speed to Betaflight as bidirectional DSHOT telemetry
+    // (drivers/dshot_fake.c encodes it as eRPM; RPM filter and dyn idle read it from there).
+    void updateMotorTelemetry(const SimState& simState){
+      for (int i = 0; i < 4; i++) {
+        BF::simDshotMotorRpm[i] = std::fabs(simState.motorsState[i].rpm);
+      }
+    }
+
     void updateOsd(SimState& simState){
       bool osdChanged = false;
       for (int y = 0; y < VIDEO_LINES; y++) {
@@ -139,6 +149,7 @@ namespace SimITL{
       updateBattery(simState);
       updateGyroAcc(simState);
       updateGps(simState);
+      updateMotorTelemetry(simState);
 
       if (BF::sleep_timer > 0) {
         BF::sleep_timer -= dt;
