@@ -26,8 +26,11 @@ set_target_properties(simitl-playback PROPERTIES
 target_compile_features(simitl-playback PUBLIC cxx_std_17)
 
 if (UNIX)
-  target_link_libraries(simitl-playback PUBLIC -lpthread -lrt)
+  target_link_libraries(simitl-playback PUBLIC -lpthread)
 endif (UNIX)
+if (UNIX AND NOT APPLE)
+  target_link_libraries(simitl-playback PUBLIC -lrt)
+endif ()
 
 
 if (WIN32)

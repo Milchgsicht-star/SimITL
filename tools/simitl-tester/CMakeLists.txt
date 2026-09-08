@@ -19,8 +19,11 @@ target_include_directories(simitl-tester PUBLIC
 target_compile_features(simitl-tester PUBLIC cxx_std_17)
 
 if (UNIX)
-  target_link_libraries(simitl-tester PUBLIC -lpthread -lrt)
+  target_link_libraries(simitl-tester PUBLIC -lpthread)
 endif (UNIX)
+if (UNIX AND NOT APPLE)
+  target_link_libraries(simitl-tester PUBLIC -lrt)
+endif ()
 
 
 if (WIN32)

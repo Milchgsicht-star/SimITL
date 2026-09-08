@@ -18,9 +18,9 @@ target_include_directories(
 
 target_compile_features(simitlsharedmem PUBLIC cxx_std_17)
 
-if (UNIX)
+if (UNIX AND NOT APPLE)
   target_link_libraries(simitlsharedmem PUBLIC -lrt)
-endif (UNIX)
+endif ()
 
 
 if (WIN32)

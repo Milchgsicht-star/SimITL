@@ -1,9 +1,9 @@
 [submodule "extern/betaflight"]
 	path = extern/betaflight
-	url = git@github.com:AJ92/betaflight.git
+	url = https://github.com/AJ92/betaflight.git
 [submodule "extern/fmt"]
 	path = extern/fmt
 	url = https://github.com/fmtlib/fmt.git
 [submodule "extern/libwebsockets"]
 	path = extern/libwebsockets
-	url = git@github.com:warmcat/libwebsockets.git
+	url = https://github.com/warmcat/libwebsockets.git

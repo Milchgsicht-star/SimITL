@@ -28,6 +28,7 @@
 #include <time.h>
 
 #include "common/maths.h"
+#include "fc/init.h"
 
 #include "drivers/adc.h"
 #include "drivers/io.h"

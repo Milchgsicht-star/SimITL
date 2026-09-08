@@ -27,7 +27,7 @@ namespace SimITL{
     //} 
   }
 
-  std::chrono::system_clock::time_point start;
+  hr_clock::time_point start;
 
   void wsUpdateThread(Sim * sim){
     sim->wsThreadRunning = true;

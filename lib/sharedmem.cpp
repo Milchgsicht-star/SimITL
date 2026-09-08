@@ -67,9 +67,16 @@ namespace SimITL{
       return false;
     }
 #endif 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     // Open the shared memory object
-    int mHandle = shm_open( (std::string("/") + std::string(identifier)).c_str(), O_CREAT | O_RDWR, 0666);
+    std::string shmName = std::string("/") + std::string(identifier);
+#ifdef __APPLE__
+    // macOS: shm names are limited to 31 chars, and ftruncate on an already
+    // sized object fails with EINVAL, so drop a stale object from an earlier run first.
+    if (shmName.size() > 31) { shmName.resize(31); }
+    shm_unlink(shmName.c_str());
+#endif
+    mHandle = shm_open(shmName.c_str(), O_CREAT | O_RDWR, 0666);
     if (mHandle == -1) {
       perror("Failed to create shared memory object:");
       return false;
@@ -138,9 +145,13 @@ namespace SimITL{
       return false;
     }
 #endif 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     // Open the shared memory object
-    int mHandle = shm_open( (std::string("/") + std::string(identifier)).c_str(), O_RDWR, 0666);
+    std::string shmName = std::string("/") + std::string(identifier);
+#ifdef __APPLE__
+    if (shmName.size() > 31) { shmName.resize(31); }
+#endif
+    mHandle = shm_open(shmName.c_str(), O_RDWR, 0666);
     if (mHandle == -1) {
       perror("Failed to open shared memory object:");
       return false;
@@ -172,7 +183,7 @@ namespace SimITL{
     UnmapViewOfFile(mSharedBuffer);
     CloseHandle(mHandle);
 #endif 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     munmap(mSharedBuffer, sizeof(SharedBuffer));
     close(mHandle);
 #endif

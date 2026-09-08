@@ -5,7 +5,7 @@
   #include <windows.h>
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
   #include <fcntl.h>
   #include <sys/mman.h>
   #include <unistd.h>
@@ -38,7 +38,7 @@ namespace SimITL{
 #ifdef _WIN32
       HANDLE mHandle = 0;
 #endif 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
       int mHandle = 0;
 #endif
   };
