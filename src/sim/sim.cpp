@@ -21,6 +21,7 @@ namespace SimITL{
   }
 
   Sim::~Sim() {
+    stop();
     running = false;          // signal the wsThread to exit                             
     //if(wsThread.joinable()) {                                                            
     //  wsThread.join();      // wait for it                                             
@@ -120,16 +121,17 @@ namespace SimITL{
   }
 
   void Sim::stop(){
-    // stopping the ws coms kind of corrupts managed memory of the engine under linux...
-    /*
+    // Upstream left this empty (joining after BF::stopSerial corrupted engine memory on Linux).
+    // Without a join the static singleton's std::thread is still joinable at process exit and
+    // libc++ calls std::terminate (exit code 134 in Unity players). So: signal, wait for the
+    // thread to leave its loop on its own, then join; detach only as a last resort.
     running = false;
-
-    BF::stopSerial();
-
-    if(wsThread.joinable()){
-      wsThread.join();
+    for(int i = 0; i < 300 && wsThreadRunning; i++){
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-    */
+    if(wsThread.joinable()){
+      if(!wsThreadRunning){ wsThread.join(); } else { wsThread.detach(); }
+    }
   }
 
 }
