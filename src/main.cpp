@@ -1,4 +1,5 @@
 #include "sim/sim.h"
+#include "sim/physics.h"
 #include "network/packets.h"
 #include <fmt/format.h>
 #include <stdlib.h>
@@ -39,6 +40,15 @@ extern "C" {
       case 2: return static_cast<int32_t>(sizeof(StateOutput));
       default: return -1;
     }
+  }
+
+  // Air density in kg/m^3 (default 1.225). Takes effect immediately, survives reinit and reset.
+  void simitl_set_air_density(float rho){
+    SimITL::Physics::setAirDensity(rho);
+  }
+
+  float simitl_get_air_density(){
+    return SimITL::Physics::getAirDensity();
   }
 
   void simitl_command(const CommandType cmd){

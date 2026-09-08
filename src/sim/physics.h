@@ -17,6 +17,13 @@ namespace SimITL{
       bool checkSimState();
 
       /**
+       * \brief Sets the air density in kg/m^3 (default 1.225, ISA sea level). Scales propeller thrust,
+       * propeller torque and frame drag linearly. Values <= 0.05 reset to the default.
+       */
+      static void setAirDensity(float rho);
+      static float getAirDensity();
+
+      /**
        * \brief Sets the sim-wide state, which is shared across all components.
        * \param[in,out] state The state of the sim that is updated and accessed per simulation step, 
        * from various components.

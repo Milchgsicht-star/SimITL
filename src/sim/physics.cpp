@@ -9,7 +9,25 @@ namespace SimITL{
   #define M_PI 3.14159265358979
   #endif
 
-  const auto AIR_RHO = 1.225f;
+  // Luftdichte in kg/m^3. Standard ist die ISA-Dichte auf Meereshoehe, mit der das Propellermodell
+  // (propThrustFactor, propAFactor) kalibriert ist. Ueber simitl_set_air_density() setzbar (z. B. 1800 m: 1.08,
+  // 2700 m: 0.98): Schub und Propellermoment skalieren linear mit rho, der Rahmenwiderstand ebenfalls.
+  const float AIR_RHO_REF = 1.225f;
+  static float g_airRho = AIR_RHO_REF;
+  #define AIR_RHO g_airRho
+
+  void Physics::setAirDensity(float rho){
+    g_airRho = (rho > 0.05f) ? rho : AIR_RHO_REF;
+  }
+
+  float Physics::getAirDensity(){
+    return g_airRho;
+  }
+
+  // Skalierung von Schub und Propellermoment gegenueber der Kalibrierdichte (Impulssatz: T ~ rho * n^2 * D^4).
+  static inline float airDensityScale(){
+    return g_airRho / AIR_RHO_REF;
+  }
 
   // -1.0 , 1.0
   inline float randf(){
@@ -284,7 +302,8 @@ float Physics::motorTorque(float volts, float rpm, float kV, float R, float I0) 
     const auto b = (propF - prop_a * max_rpm * max_rpm ) / max_rpm;
     const auto result = b * rpm + prop_a * rpm * rpm;
 
-    return std::max(result, 0.0f);
+    // Luftdichte: weniger Masse pro Umdrehung -> proportional weniger Schub (und ueber propTorque weniger Moment)
+    return std::max(result, 0.0f) * airDensityScale();
   }
 
   float Physics::propTorque(float rpm, float vel) {
